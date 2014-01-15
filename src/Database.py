@@ -14,7 +14,7 @@ class UserDB:
         UserDB.__INST__ = self
         self.__fp = open("users.db","r")
         self.reload()
-        Utils.Logging.instance().log("UserDB: userdb initialized.")
+        Utils.Logging.instance().log("USERDB: userdb initialized.")
     @staticmethod
     def create_instance():
         UserDB()
