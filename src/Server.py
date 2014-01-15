@@ -5,11 +5,12 @@
 # the connection handlers for the WebSocket
 # transport layer. It also houses the entry point
 # for the application.
-# Dependencies: Tornado.py, User.py, Utils.py
+# Dependencies: Tornado.py, User.py, Utils.py, Database.py
 ##############################################
 
 import tornado.websocket
 from Utils import *
+import Database
 import User
 
 class WS_Handler(tornado.websocket.WebSocketHandler):
@@ -30,5 +31,7 @@ class WS_Handler(tornado.websocket.WebSocketHandler):
 
 def main():
     Logging.create_instance("PME.log")
+    Authenticator.create_instance()
+    Database.UserDB.create_instance()
 if __name__ == "__main__":
     main()
