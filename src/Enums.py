@@ -18,3 +18,13 @@ class MessageReqType:
     LOGOUT = 2
     GET_NODE = 3
     GET_TREE = 4
+class DatabaseTableDefs:
+    user_data_table = "CREATE TABLE '%s'(id INTEGER PRIMARY KEY,content TEXT(1000));"
+    user_data_map = "CREATE TABLE user_data(username TEXT(1000),table_name TEXT(1000));"
+    login = "CREATE TABLE login(username TEXT(1000),passhash TEXT(1000));"
+
+class DatabaseQueries:
+    find_user = "SELECT * FROM %s WHERE username='%s' AND passhash='%s'"
+class DatabaseInsertions:
+    new_user_login = "INSERT INTO login VALUES('%s','%s')"
+    new_user_data = "INSERT INTO user_data VALUES('%s','%s');"

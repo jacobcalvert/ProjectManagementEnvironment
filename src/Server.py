@@ -39,10 +39,10 @@ def main():
     Logging.create_instance("PME.log")
     Authenticator.create_instance()
     Database.UserDB.create_instance()
+    Database.DataDB.create_instance()
     UserComponent.create_instance()
     MessageParser.create_instance()
-
-
+    Database.UserDB.instance().new_user("jacob","passhash")
 
     #tornado config
     app = tornado.web.Application([
