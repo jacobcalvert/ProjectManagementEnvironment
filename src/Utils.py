@@ -11,7 +11,7 @@ import datetime
 class Logging:
     # This class is sort of a singleton, we don't need 10 Logging
     # objects running around. It is created with 'create_instance'
-    # and the instance is retrieved with 'instance()'. 
+    # and the instance is retrieved with 'instance()'.
     __INST__ = None
     def __init__(self,file_name,log_lev):
         self.__INST__ = self
