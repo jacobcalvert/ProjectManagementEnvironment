@@ -28,6 +28,8 @@ class User:
             return True
     def is_authenticated(self):
         return self.__authenticated
+    def auth_token(self):
+        return self.__auth_token
 
 
 class UserComponent:

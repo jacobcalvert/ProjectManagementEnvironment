@@ -13,3 +13,8 @@ class LoggingLevel:
     Severe = 4
     Fatal = 5
     _DEFAULT_LOG_LEVEL = Info
+class MessageReqType:
+    LOGIN = 1
+    LOGOUT = 2
+    GET_NODE = 3
+    GET_TREE = 4

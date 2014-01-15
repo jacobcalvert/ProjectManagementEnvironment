@@ -5,7 +5,7 @@
 # the connection handlers for the WebSocket
 # transport layer. It also houses the entry point
 # for the application.
-# Dependencies: Tornado.py, User.py, Utils.py, Database.py, MessageParser.py
+# Dependencies: Tornado.py, User.py, Utils.py, Database.py, MessageParser.py, threading
 ##############################################
 
 import tornado.websocket
@@ -41,5 +41,14 @@ def main():
     Database.UserDB.create_instance()
     UserComponent.create_instance()
     MessageParser.create_instance()
+
+
+
+    #tornado config
+    app = tornado.web.Application([
+        (r"/ws", WS_Handler),
+        ])
+    app.listen(8022)
+    tornado.ioloop.IOLoop.instance().start()
 if __name__ == "__main__":
     main()
