@@ -68,6 +68,10 @@ class MessageParser:
         if(message.get_req_type() != Enums.MessageReqType.LOGIN and message.auth_token == user.auth_token() and user.is_authenticated()):
             #auth'd
             print user
+
+            #TEMP
+            jObj = json.dumps({"temp_repl_type":message.node_id})
+            user.ws().write_message(jObj)
         elif(message.get_req_type() == Enums.MessageReqType.LOGIN):
             cs = CredentialSet(message.username,message.passhash)
             Authenticator.instance().authenticate(user,cs)
