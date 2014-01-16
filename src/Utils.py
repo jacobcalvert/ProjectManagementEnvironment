@@ -3,13 +3,14 @@
 # Author: Jacob Calvert
 # Description: The Utils module defines objects
 # for logging,authentication, and other utilities.
-# Dependencies: Enums.py, Database.py,time, datetime,hashlib
+# Dependencies: Enums.py, Database.py,time, datetime,hashlib,json
 ##############################################
 import Enums
 import Database
 import time
 import datetime
 import hashlib
+import json
 class Logging:
     # This class is sort of a singleton, we don't need 10 Logging
     # objects running around. It is created with 'create_instance'
@@ -64,7 +65,9 @@ class Authenticator:
         result = Database.UserDB.instance().find_user(credential_obj.user(),credential_obj.passhash())
         if(result == True):
             #authenticate
-            hash = hashlib.sha512(str(time.time())+credential_obj.user).hexdigest()
-            user_obj.authenticated(hash,time.time()+(15*60),credential_obj.user(),credential_obj.passhash())
+            hash = hashlib.sha512(str(time.time())+credential_obj.user()).hexdigest()
+            user_obj.authenticated(hash,time.time()+(Enums.AuthToken.valid_interval_in_minutes*60),credential_obj.user(),credential_obj.passhash())
+            jObj = json.dumps({"reply_type":"login_success", "auth_token":hash})
+            user_obj.ws().write_message(jObj)
 
 

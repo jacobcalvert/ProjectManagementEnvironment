@@ -40,11 +40,17 @@ class UserDB:
         if(len(rows) == 1):
             return True
     def new_user(self,username,passhash):
-        new_table = hashlib.sha256(username+passhash).hexdigest()
-        self.__cursor.execute(Enums.DatabaseInsertions.new_user_login % (username,passhash))
-        self.__cursor.execute(Enums.DatabaseInsertions.new_user_data % (username,new_table))
-        self.__db_con.commit()
-        DataDB.instance().new_user(new_table)
+        if(not self.username_exists(username)):
+            new_table = hashlib.sha256(username+passhash).hexdigest()
+            self.__cursor.execute(Enums.DatabaseInsertions.new_user_login % (username,passhash))
+            self.__cursor.execute(Enums.DatabaseInsertions.new_user_data % (username,new_table))
+            self.__db_con.commit()
+            DataDB.instance().new_user(new_table)
+    def username_exists(self,username):
+        results = self.__cursor.execute(Enums.DatabaseQueries.find_username % ("login",username))
+        rows = [res for res in results]
+        if(len(rows) != 0):
+            return True
 class DataDB:
     __INST__ = None
     def __init__(self):

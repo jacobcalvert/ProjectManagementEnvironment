@@ -9,6 +9,7 @@
 ##############################################
 
 import tornado.websocket
+import tornado.web
 from Utils import *
 import Database
 from User import *
@@ -31,7 +32,15 @@ class WS_Handler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         Logging.instance().log("SERVER: Websocket connection closed.")
         UserComponent.instance().del_user(self)
-
+class NewUserHandler(tornado.web.RequestHandler):
+    def post(self):
+        username = self.get_argument("username")
+        passhash = self.get_argument("passhash")
+        if(not Database.UserDB.instance().username_exists(username)):
+            Database.UserDB.instance().new_user(username,passhash)
+            self.write("True")
+        else:
+            self.write("False")
 
 
 
@@ -42,11 +51,10 @@ def main():
     Database.DataDB.create_instance()
     UserComponent.create_instance()
     MessageParser.create_instance()
-    Database.UserDB.instance().new_user("jacob","passhash")
-
     #tornado config
     app = tornado.web.Application([
         (r"/ws", WS_Handler),
+        (r"/new_user", NewUserHandler),
         ])
     app.listen(8022)
     tornado.ioloop.IOLoop.instance().start()

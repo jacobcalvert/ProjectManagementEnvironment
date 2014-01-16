@@ -25,6 +25,10 @@ class DatabaseTableDefs:
 
 class DatabaseQueries:
     find_user = "SELECT * FROM %s WHERE username='%s' AND passhash='%s'"
+    find_username = "SELECT * FROM %s WHERE username='%s'"
 class DatabaseInsertions:
     new_user_login = "INSERT INTO login VALUES('%s','%s')"
     new_user_data = "INSERT INTO user_data VALUES('%s','%s');"
+class AuthToken:
+    valid_interval_in_minutes = 0.5
+    renew_window_in_seconds = 15

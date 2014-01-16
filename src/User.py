@@ -3,10 +3,11 @@
 # Author: Jacob Calvert
 # Description: The User module defines an object
 # for user auth and account tracking
-# Dependencies: Utils.py, time
+# Dependencies: Utils.py, time,Enums
 ##############################################
 from Utils import Logging
 import time
+import Enums
 class User:
     TYPE = "User"
     def __init__(self,ws_handle):
@@ -23,13 +24,36 @@ class User:
         self.__username = user_name
         self.__passhash = passhash
         self.__authenticated = True
-    def expired(self):
-        if(self.__expiry == None or self.__expiry < time.time()):
+    def needs_reauth(self):
+        if(self.__authenticated and self.__expiry - time.time() < Enums.AuthToken.renew_window_in_seconds and not self.is_expired()):
+            return True
+    def is_expired(self):
+        if(time.time() > self.__expiry):
+            self.__authenticated = False
+            self.__auth_token = None
+            self.__expiry = None
             return True
     def is_authenticated(self):
         return self.__authenticated
     def auth_token(self):
         return self.__auth_token
+    def user(self):
+        return self.__username
+    def passhash(self):
+        return self.__passhash
+    def ws(self):
+        return self.__ws
+    def __str__(self):
+        s = ""
+        s+= "USER"
+        s+= "  username: %-30s\n" %(self.__username)
+        s+= "  passhash: %-30s\n" %(self.__passhash)
+        s+= "  auth_tok: %-30s\n" %(self.__auth_token)
+        s+= "  expiry:   %-30s\n" %(self.__expiry)
+        s+= "  current:  %-30s\n" %(time.time())
+        s+= "  exp_diff: %-30s\n" %(self.__expiry - time.time())
+        s+= "  auth'd:   %-30s\n" %(self.__authenticated)
+        return s
 
 
 class UserComponent:

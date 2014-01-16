@@ -5,7 +5,7 @@
 # methods to parse and process incoming messages.
 # Dependencies: Utils.py,json,Enums.py
 ##############################################
-from Utils import Logging
+from Utils import Logging,Authenticator,CredentialSet
 import json
 import Enums
 class MessageParser:
@@ -33,6 +33,12 @@ class MessageParser:
                 message_obj = self._ph_do_parse(jObj)
                 if(message_obj.valid):
                     self._ph_process_message(message_obj,user_obj)
+                    if(user_obj.needs_reauth()):
+                        message_obj.set_req_type(Enums.MessageReqType.LOGIN)
+                        message_obj.username = user_obj.user()
+                        message_obj.passhash = user_obj.passhash()
+                        self._ph_process_message(message_obj,user_obj)
+
 
     def _ph_is_object_formatted(self,jObj):
         if("req_type" in jObj):
@@ -47,7 +53,7 @@ class MessageParser:
         if(jObj["req_type"] == "login"):
             msg.set_req_type(Enums.MessageReqType.LOGIN)
             msg.username = jObj["username"]
-            msg.passhass = jObj["passhash"]
+            msg.passhash = jObj["passhash"]
         elif(jObj["req_type"] == "logout"):
             msg.set_req_type(Enums.MessageReqType.LOGOUT)
             msg.auth_token = jObj["auth_token"]
@@ -59,9 +65,16 @@ class MessageParser:
             msg.valid = False
         return msg
     def _ph_process_message(self,message,user):
-        if(message.get_req_type() != Enums.MessageReqType.LOGIN and message.auth_token == user.auth_token()):
+        if(message.get_req_type() != Enums.MessageReqType.LOGIN and message.auth_token == user.auth_token() and user.is_authenticated()):
             #auth'd
-            pass
+            print user
+        elif(message.get_req_type() == Enums.MessageReqType.LOGIN):
+            cs = CredentialSet(message.username,message.passhash)
+            Authenticator.instance().authenticate(user,cs)
+            print user
+        else:
+            jObj = json.dumps({"reply_type":"login_needed","comment":"login needed"})
+            user.ws().write_message(jObj)
 
 
 class Message:
