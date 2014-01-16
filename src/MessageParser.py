@@ -3,11 +3,12 @@
 # Author: Jacob Calvert
 # Description: The MessageParser module provides
 # methods to parse and process incoming messages.
-# Dependencies: Utils.py,json,Enums.py
+# Dependencies: Utils.py,json,Enums.py,Database.py
 ##############################################
 from Utils import Logging,Authenticator,CredentialSet
 import json
 import Enums
+import Database
 class MessageParser:
     __INST__ = None
     def __init__(self):
@@ -67,11 +68,9 @@ class MessageParser:
     def _ph_process_message(self,message,user):
         if(message.get_req_type() != Enums.MessageReqType.LOGIN and message.auth_token == user.auth_token() and user.is_authenticated()):
             #auth'd
-            print user
-
-            #TEMP
-            jObj = json.dumps({"temp_repl_type":message.node_id})
-            user.ws().write_message(jObj)
+            table = Database.UserDB.instance().get_user_table(user.user())
+            data = Database.DataDB.instance().get_node(table,message.node_id)
+            print data
         elif(message.get_req_type() == Enums.MessageReqType.LOGIN):
             cs = CredentialSet(message.username,message.passhash)
             Authenticator.instance().authenticate(user,cs)

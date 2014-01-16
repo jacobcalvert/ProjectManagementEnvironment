@@ -19,13 +19,15 @@ class MessageReqType:
     GET_NODE = 3
     GET_TREE = 4
 class DatabaseTableDefs:
-    user_data_table = "CREATE TABLE '%s'(id INTEGER PRIMARY KEY,content TEXT(1000));"
+    user_data_table = "CREATE TABLE '%s'(id INTEGER PRIMARY KEY,parent INTEGER ,content TEXT(1000));"
     user_data_map = "CREATE TABLE user_data(username TEXT(1000),table_name TEXT(1000));"
     login = "CREATE TABLE login(username TEXT(1000),passhash TEXT(1000));"
 
 class DatabaseQueries:
     find_user = "SELECT * FROM %s WHERE username='%s' AND passhash='%s'"
     find_username = "SELECT * FROM %s WHERE username='%s'"
+    get_user_table_name = "SELECT * FROM user_data WHERE username='%s'"
+    get_node = "SELECT * FROM '%s' WHERE parent='%s'"
 class DatabaseInsertions:
     new_user_login = "INSERT INTO login VALUES('%s','%s')"
     new_user_data = "INSERT INTO user_data VALUES('%s','%s');"

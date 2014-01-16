@@ -51,6 +51,11 @@ class UserDB:
         rows = [res for res in results]
         if(len(rows) != 0):
             return True
+    def get_user_table(self,username):
+        results = self.__cursor.execute(Enums.DatabaseQueries.get_user_table_name % (username))
+        rows = [res for res in results]
+        if(len(rows)==1):
+            return rows[0][1]
 class DataDB:
     __INST__ = None
     def __init__(self):
@@ -75,3 +80,7 @@ class DataDB:
     def new_user(self,table_name):
         self.__cursor.execute(Enums.DatabaseTableDefs.user_data_table % (table_name))
         self.__db_con.commit()
+    def get_node(self,table,node_id):
+        results = self.__cursor.execute(Enums.DatabaseQueries.get_node % (table,node_id))
+        rows = [row for row in results]
+        return rows
