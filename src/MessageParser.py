@@ -70,7 +70,7 @@ class MessageParser:
             #auth'd
             table = Database.UserDB.instance().get_user_table(user.user())
             data = Database.DataDB.instance().get_node(table,message.node_id)
-            print data
+            user.ws().write_message(json.dumps(data))
         elif(message.get_req_type() == Enums.MessageReqType.LOGIN):
             cs = CredentialSet(message.username,message.passhash)
             Authenticator.instance().authenticate(user,cs)

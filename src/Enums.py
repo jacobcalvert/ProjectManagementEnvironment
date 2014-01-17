@@ -19,7 +19,7 @@ class MessageReqType:
     GET_NODE = 3
     GET_TREE = 4
 class DatabaseTableDefs:
-    user_data_table = "CREATE TABLE '%s'(id INTEGER PRIMARY KEY,parent INTEGER ,content TEXT(1000));"
+    user_data_table = "CREATE TABLE %s (id TEXT(1000),parent TEXT(1000) ,content TEXT(1000));"
     user_data_map = "CREATE TABLE user_data(username TEXT(1000),table_name TEXT(1000));"
     login = "CREATE TABLE login(username TEXT(1000),passhash TEXT(1000));"
 
