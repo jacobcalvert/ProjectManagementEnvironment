@@ -62,21 +62,37 @@ class MessageParser:
             msg.set_req_type(Enums.MessageReqType.GET_NODE)
             msg.auth_token = jObj["auth_token"]
             msg.node_id = jObj["node_id"]
+        elif(jObj["req_type"] == "insert_node"):
+            msg.set_req_type(Enums.MessageReqType.INSERT_NODE)
+            print str(jObj)
+            msg.auth_token = jObj["auth_token"]
+            msg.parent_node = jObj["parent_node"]
+            msg.content = jObj["content"]
+            msg.node_id = jObj["node_id"]
+        elif(jObj["req_type"] == Enums.MessageReqType.DELETE_NODE):
+            msg.set_req_type(Enums.MessageReqType.DELETE_NODE)
+            msg.node_id = jObj["node_id"]
         else:
             msg.valid = False
         return msg
     def _ph_process_message(self,message,user):
-        if(message.get_req_type() != Enums.MessageReqType.LOGIN and message.auth_token == user.auth_token() and user.is_authenticated()):
+        if(message.get_req_type() == Enums.MessageReqType.GET_NODE and message.auth_token == user.auth_token() and user.is_authenticated()):
             #auth'd
             table = Database.UserDB.instance().get_user_table(user.user())
             data = Database.DataDB.instance().get_node(table,message.node_id)
-            user.ws().write_message(json.dumps(data))
+            user.ws().write_message(json.dumps(data)) # TEMP: we'll need to format the data better.
         elif(message.get_req_type() == Enums.MessageReqType.LOGIN):
             cs = CredentialSet(message.username,message.passhash)
             Authenticator.instance().authenticate(user,cs)
             print user
+        elif(message.get_req_type() == Enums.MessageReqType.DELETE_NODE and message.auth_token == user.auth_token() and user.is_authenticated()):
+            table = Database.UserDB.instance().get_user_table(user.user())
+            Database.DataDB.instance().delete_node(table,message.node_id)
+        elif(message.get_req_type() == Enums.MessageReqType.INSERT_NODE and message.auth_token == user.auth_token() and user.is_authenticated()):
+            table = Database.UserDB.instance().get_user_table(user.user())
+            Database.DataDB.instance().insert_node(table,message.node_id,message.parent_node, message.content)
         else:
-            jObj = json.dumps({"reply_type":"login_needed","comment":"login needed"})
+            jObj = json.dumps(Enums.MessageReplyType.login_needed)
             user.ws().write_message(jObj)
 
 

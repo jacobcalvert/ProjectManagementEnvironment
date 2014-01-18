@@ -67,7 +67,7 @@ class Authenticator:
             #authenticate
             hash = hashlib.sha512(str(time.time())+credential_obj.user()).hexdigest()
             user_obj.authenticated(hash,time.time()+(Enums.AuthToken.valid_interval_in_minutes*60),credential_obj.user(),credential_obj.passhash())
-            jObj = json.dumps({"reply_type":"login_success", "auth_token":hash})
+            jObj = json.dumps()
             user_obj.ws().write_message(jObj)
 
 
