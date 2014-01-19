@@ -10,7 +10,7 @@
 
 import tornado.websocket
 import tornado.web
-from Utils import *
+from Utils import Logging
 import Database
 from User import *
 from MessageParser import *
