@@ -44,8 +44,8 @@ class User:
     def ws(self):
         return self.__ws
     def __str__(self):
-        s = ""
-        s+= "USER"
+        s = "\n"
+        s+= "USER\n"
         s+= "  username: %-30s\n" %(self.__username)
         s+= "  passhash: %-30s\n" %(self.__passhash)
         s+= "  auth_tok: %-30s\n" %(self.__auth_token)

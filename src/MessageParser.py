@@ -82,9 +82,10 @@ class MessageParser:
             data = Database.DataDB.instance().get_node(table,message.node_id)
             user.ws().write_message(json.dumps(data)) # TEMP: we'll need to format the data better.
         elif(message.get_req_type() == Enums.MessageReqType.LOGIN):
-            cs = CredentialSet(message.username,message.passhash)
-            Authenticator.instance().authenticate(user,cs)
-            print user
+            cs = CredentialSet(message.username, message.passhash)
+            Authenticator.instance().authenticate(user, cs)
+            if(user.is_authenticated()):
+                print user
         elif(message.get_req_type() == Enums.MessageReqType.DELETE_NODE and message.auth_token == user.auth_token() and user.is_authenticated()):
             table = Database.UserDB.instance().get_user_table(user.user())
             Database.DataDB.instance().delete_node(table,message.node_id)
