@@ -65,6 +65,21 @@ function ws_msg(event)
 	{
 		window.session.auth = msg.auth_token;
 	}
+	else if (msg.reply_type == "get_node")
+	{
+		html = "";
+		for (i = 0; i < msg.num_results; i++)
+		{
+			html += "<div class ='getnode'>";
+			html += "<li>"+msg.results[i].id + "</li>";
+			html += "<li>"+msg.results[i].parent + "</li>";
+			html += "<li>"+msg.results[i].content + "</li>";
+			html += "</div>";
+			html+= "<hr>";
+			
+		}
+		$("#results").html(html);
+	}
 	log("Rx'd message ("+event.data+") on WebSocket connection.");
 }
 function ws_close(event)

@@ -99,7 +99,10 @@ class DataDB:
     def get_node(self,table,node_id):
         results = self.__cursor.execute(Enums.DatabaseQueries.get_node % (table,node_id))
         rows = [row for row in results]
-        return rows
+        result = []
+        for i in range(len(rows)):
+            result.append({"id":rows[i][0],"parent":rows[i][1],"content":rows[i][2]})
+        return result
     def delete_node(self,table_name,node_id):
         pass # we'll need to recursively search down the tree and find every node under the node being deleted and then
              # delete them all.
