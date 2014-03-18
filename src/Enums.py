@@ -41,3 +41,4 @@ class AuthToken:
     renew_window_in_seconds = 15
 class MessageReplyType:
     login_needed = {"reply_type":"login_needed","comment":"login needed"}
+    get_node = {"reply_type":"get_node","node_requested":"","num_results":"","results":""}

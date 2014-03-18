@@ -105,3 +105,4 @@ class DataDB:
              # delete them all.
     def insert_node(self,table,node_id,parent_node,content):
         self.__cursor.execute(Enums.DatabaseInsertions.new_node % (table,node_id,parent_node,content))
+        self.__db_con.commit()
