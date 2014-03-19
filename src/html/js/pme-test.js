@@ -25,49 +25,42 @@ function connect_ws()
 	window.ws.handle.onclose = ws_close;
 	window.ws.handle.onerror = ws_err;
 }
-function set_handlers()
+function init_handlers()
 {
-	$(".node").unbind('click');
-	$(".node").click(function(event){ window.location.hash = $(this).attr("id");});
-	$(window).unbind('hashchange');
-	$(window).bind('hashchange',function()
-	{
-		hash = document.URL.substr(document.URL.indexOf('#')+1) ;
-		get_node(hash)
-	});
-	
+	$("#login").click(login);
+	$("#gnode").click(gnode);
+	$("#inode").click(inode);
 }
 function init()
 {
 	connect_ws();
-	set_handlers();
+	init_handlers();
 }
 function login()
 {
-	msg = {"req_type":"login","username":"jacob", "passhash":"passhash"};
+	msg = {"req_type":"login","username":$("#un").val(), "passhash":$("#ph").val()};
 	log(JSON.stringify(msg),window.logging.level.INFO,"login");
 	window.ws.handle.send(JSON.stringify(msg));
 }
-function get_node(id)
+function gnode()
 {
-	msg = {"req_type":"get_node", "auth_token":window.session.auth,"node_id":id}
-	msg = JSON.stringify(msg);
-	log(msg);
-	window.ws.handle.send(msg);
+	msg = {"req_type":"get_node","node_id":$("#gnid").val(),"auth_token":window.session.auth};
+	log(JSON.stringify(msg));
+	window.ws.handle.send(JSON.stringify(msg));
+}
+function inode()
+{
+	msg = {"req_type":"insert_node","node_id":$("#inid").val(),"content":$("#inc").val(),"parent_node":$("#inp").val(),"auth_token":window.session.auth};
+	log(JSON.stringify(msg));
+	window.ws.handle.send(JSON.stringify(msg));
 }
 function ws_open(event)
 {
 	log("WebSocket has been opened: " + event.data);
-	login();
-	setTimeout(function(){
-	var hash = document.URL.substr(document.URL.indexOf('#')+1) 
-	
-	get_node(hash);},1000);
 }	
 function ws_msg(event)
 {
-	log("Rx'd message ("+event.data+") on WebSocket connection.");
-	msg = JSON.parse(event.data);	
+	msg = JSON.parse(event.data);
 	if (msg.reply_type == "login_success")
 	{
 		window.session.auth = msg.auth_token;
@@ -75,29 +68,19 @@ function ws_msg(event)
 	else if (msg.reply_type == "get_node")
 	{
 		html = "";
-		if (msg.num_results > 0)
-		{
-			window.location.hash = msg.results[0].parent;
-		}
-		else
-		{
-			alert("No children.");
-			history.back();
-		}
 		for (i = 0; i < msg.num_results; i++)
 		{
-			html += "<div class ='node' id='"+msg.results[i].id+"'>";
-			contents = JSON.parse(msg.results[i].content);
-			html += "<h1>" + contents.title + "</h2>";
-			html += "<p>" + contents.description + "</p>";
-			html += "<p>Date: " + contents.date_created + "</p>";
+			html += "<div class ='getnode'>";
+			html += "<li>"+msg.results[i].id + "</li>";
+			html += "<li>"+msg.results[i].parent + "</li>";
+			html += "<li>"+msg.results[i].content + "</li>";
 			html += "</div>";
+			html+= "<hr>";
 			
 		}
-		$("#main").html(html);
-		set_handlers();
+		$("#results").html(html);
 	}
-
+	log("Rx'd message ("+event.data+") on WebSocket connection.");
 }
 function ws_close(event)
 {
