@@ -31,3 +31,25 @@ body
 	font-size:14px;
 	font:sans-serif;
 }
+#context-menu
+{
+	width: 400px;
+	background:gray;
+	border:1px solid white;
+	z-index:100;
+	position:absolute;
+	top:0;
+	left:0;
+	display:none;
+}
+#context-menu .menu-item
+{
+	width:100%;
+	padding:3px;
+	color:black;
+	
+}
+#context-menu #insert_node
+{
+	cursor:pointer;
+}

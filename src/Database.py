@@ -5,13 +5,14 @@
 # abstraction layer for the functionality that
 # will be needed later. The final implementation
 # WILL be different. Just plain text for now.
-# Dependencies: Utils.py,sqlite3,os,Enums,,random
+# Dependencies: Utils.py,sqlite3,os,Enums,json,random
 ##############################################
 import Utils
 import sqlite3
 import Enums
 import os
 import hashlib
+import json
 import random
 class UserDB:
     __INST__ = None
@@ -107,5 +108,6 @@ class DataDB:
         pass # we'll need to recursively search down the tree and find every node under the node being deleted and then
              # delete them all.
     def insert_node(self,table,node_id,parent_node,content):
+        content = json.dumps(content)
         self.__cursor.execute(Enums.DatabaseInsertions.new_node % (table,node_id,parent_node,content))
         self.__db_con.commit()

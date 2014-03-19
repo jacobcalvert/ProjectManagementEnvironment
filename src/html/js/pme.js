@@ -16,7 +16,9 @@ window.logging.set_level = window.logging.level.INFO;
 window.session = {}
 window.session.auth = null;
 
-
+jQuery.fn.mouseIsOver = function () {
+    return $(this).parent().find($(this).selector + ":hover").length > 0;
+}; 
 function connect_ws()
 {
 	window.ws.handle = new WebSocket(window.ws.base_url);
@@ -29,6 +31,10 @@ function set_handlers()
 {
 	$(".node").unbind('click');
 	$(".node").click(function(event){ window.location.hash = $(this).attr("id");});
+	$(".node").unbind("mouseover");
+	$(".node").mouseover(function(){$("#insert_node").attr("insert-parent",$(this).attr("id"));});
+	$(".node").unbind("mouseout");
+	$(".node").mouseout(function(){$("#insert_node").attr("insert-parent",document.URL.substr(document.URL.indexOf('#')+1) );});
 	$(window).unbind('hashchange');
 	$(window).bind('hashchange',function()
 	{
@@ -36,11 +42,38 @@ function set_handlers()
 		get_node(hash)
 	});
 	
+	
 }
 function init()
 {
 	connect_ws();
 	set_handlers();
+	$(document).bind("contextmenu", function(event)
+	{
+    	event.preventDefault();
+    	$("#context-menu").css({top: event.pageY + "px", left: event.pageX + "px"});
+    	$("#insert_node").html("Insert Node under "+ $("#insert_node").attr("insert-parent"));
+    	$("#context-menu").show();
+   	});
+   	$(document).bind("click", function(event)
+	{
+    	$("#context-menu").hide();
+	});
+	$("#insert_node").click(insert_node);
+}
+function insert_node()
+{
+	parent = $("#insert_node").attr("insert-parent");
+	slug = parent + "-"+ prompt("Slug: "+parent,"");
+	title = prompt("Title:");
+	desc = prompt("Desc:");
+	date = prompt("Date:");
+	content = {"title":title,"description":desc,"date_created":date};
+	msg = {"req_type":"insert_node","node_id":slug,"parent_node":parent,"content":content,"auth_token":window.session.auth};
+	msg = JSON.stringify(msg);
+	log(msg);
+	window.ws.handle.send(msg);
+	window.location.hash = parent;
 }
 function login()
 {
@@ -54,6 +87,7 @@ function get_node(id)
 	msg = JSON.stringify(msg);
 	log(msg);
 	window.ws.handle.send(msg);
+	
 }
 function ws_open(event)
 {
@@ -81,7 +115,6 @@ function ws_msg(event)
 		}
 		else
 		{
-			alert("No children.");
 			history.back();
 		}
 		for (i = 0; i < msg.num_results; i++)
